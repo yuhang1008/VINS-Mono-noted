@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/yuhang/catkin_ws/src/VINS-Mono-noted/build/devel/setup.sh

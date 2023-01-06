@@ -1,0 +1,8 @@
+prefix=/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/devel
+
+Name: vins_estimator
+Description: Description of vins_estimator
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

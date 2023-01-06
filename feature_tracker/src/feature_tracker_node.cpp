@@ -72,6 +72,8 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
     cv_bridge::CvImageConstPtr ptr;
     // 把ros message转成cv::Mat
     if (img_msg->encoding == "8UC1")
+    // 8 比特 (256位) unsigned, channel = 1, 灰度图.
+    // 加入mask之后可以考虑 8UC2
     {
         sensor_msgs::Image img;
         img.header = img_msg->header;

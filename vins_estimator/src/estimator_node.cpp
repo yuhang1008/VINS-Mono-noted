@@ -22,7 +22,7 @@ queue<sensor_msgs::PointCloudConstPtr> feature_buf;
 queue<sensor_msgs::PointCloudConstPtr> relo_buf;
 int sum_of_wait = 0;
 
-std::mutex m_buf;
+std::mutex m_buf; //传buff用的锁
 std::mutex m_state;
 std::mutex i_buf;
 std::mutex m_estimator;
@@ -66,12 +66,13 @@ void predict(const sensor_msgs::ImuConstPtr &imu_msg)
     double ry = imu_msg->angular_velocity.y;
     double rz = imu_msg->angular_velocity.z;
     Eigen::Vector3d angular_velocity{rx, ry, rz};
-    // 上一时刻世界坐标系下加速度值
+
+    // 上一时刻世界坐标系下加速度值，un代表去除bias和重力加速度并转移到世界坐标系下
     Eigen::Vector3d un_acc_0 = tmp_Q * (acc_0 - tmp_Ba) - estimator.g;
 
-    // 中值陀螺仪的结果
+    // 中值陀螺仪的结果 gyr_0是上一时刻角加速度
     Eigen::Vector3d un_gyr = 0.5 * (gyr_0 + angular_velocity) - tmp_Bg;
-    // 更新姿态
+    // 更新姿态 deltaQ负责把三维旋转向量转为四元数
     tmp_Q = tmp_Q * Utility::deltaQ(un_gyr * dt);
     // 当前时刻世界坐标系下的加速度值
     Eigen::Vector3d un_acc_1 = tmp_Q * (linear_acceleration - tmp_Ba) - estimator.g;
@@ -112,11 +113,11 @@ getMeasurements()
 
     while (true)
     {
-        if (imu_buf.empty() || feature_buf.empty())
+        if (imu_buf.empty() || feature_buf.empty()) // ||或
             return measurements;
+
         // imu   *******
         // image          *****
-        // 这就是imu还没来
         if (!(imu_buf.back()->header.stamp.toSec() > feature_buf.front()->header.stamp.toSec() + estimator.td))
         {
             //ROS_WARN("wait for imu, only should happen at the beginning");
@@ -130,12 +131,13 @@ getMeasurements()
         {
             ROS_WARN("throw img, only should happen at the beginning");
             feature_buf.pop();
-            continue;
+            continue;//直到image起始时间晚于imu, 进入下一个while循环
         }
         // 此时就保证了图像前一定有imu数据
         sensor_msgs::PointCloudConstPtr img_msg = feature_buf.front();
         feature_buf.pop();
-        // 一般第一帧不会严格对齐，但是后面就都会对齐，当然第一帧也不会用到
+        // 一般第一帧不会严格对齐，但是后面就都会对齐，当然第一帧也不会用到？?
+
         std::vector<sensor_msgs::ImuConstPtr> IMUs;
         while (imu_buf.front()->header.stamp.toSec() < img_msg->header.stamp.toSec() + estimator.td)
         {
@@ -145,9 +147,10 @@ getMeasurements()
         // 保留图像时间戳后一个imu数据，但不会从buffer中扔掉
         // imu    *   *
         // image    *
-        IMUs.emplace_back(imu_buf.front());
+        // emplace——back牵扯到右值引用，不是太理解，右值引用同时牵扯到移动构造函数，也不是太理解
+        IMUs.emplace_back(imu_buf.front()); //何时跳出循环return measurement，已经理解，直到循环处理到前两个return条件时
         if (IMUs.empty())
-            ROS_WARN("no imu between two image");
+            ROS_WARN("no imu between two image"); //鸡肋的一句?？？
         measurements.emplace_back(IMUs, img_msg);
     }
     return measurements;
@@ -169,15 +172,20 @@ void imu_callback(const sensor_msgs::ImuConstPtr &imu_msg)
     last_imu_t = imu_msg->header.stamp.toSec();
     // 讲一下线程锁 条件变量用法
     m_buf.lock();
+    //为了锁imu_buf 保证不被其线程操作
+    //在完成将msg放入buf的操作后,唤醒作用于process线程中的获取观测值数据的函数。
     imu_buf.push(imu_msg);
     m_buf.unlock();
-    con.notify_one();
+    con.notify_one();//?唤醒一个等待序列里的线程 process 主线程
 
     last_imu_t = imu_msg->header.stamp.toSec();
 
-    {
+    {  //lock_guard():其原理是：声明一个局部的lock_guard对象，在其构造函数中进行加锁，
+       //在其析构函数中进行解锁。最终的结果就是：创建即加锁，作用域结束自动解锁。
+       //从而使用lock_guard()就可以替代lock()与unlock()。
         std::lock_guard<std::mutex> lg(m_state);
         predict(imu_msg);
+        //得到temp, tempv, temq，都是通过IMU量直接计算得到的 如何初始化?？?？
         std_msgs::Header header = imu_msg->header;
         header.frame_id = "world";
         // 只有初始化完成后才发送当前结果
@@ -217,6 +225,7 @@ void restart_callback(const std_msgs::BoolConstPtr &restart_msg)
     {
         ROS_WARN("restart the estimator!");
         m_buf.lock();
+        //feature buff和imu buff全都清空
         while(!feature_buf.empty())
             feature_buf.pop();
         while(!imu_buf.empty())
@@ -236,7 +245,7 @@ void relocalization_callback(const sensor_msgs::PointCloudConstPtr &points_msg)
 {
     //printf("relocalization callback! \n");
     m_buf.lock();
-    relo_buf.push(points_msg);
+    relo_buf.push(points_msg); //什么points?
     m_buf.unlock();
 }
 
@@ -246,29 +255,32 @@ void process()
     while (true)    // 这个线程是会一直循环下去
     {
         std::vector<std::pair<std::vector<sensor_msgs::ImuConstPtr>, sensor_msgs::PointCloudConstPtr>> measurements;
-        std::unique_lock<std::mutex> lk(m_buf);
+        std::unique_lock<std::mutex> lk(m_buf);//设置unique锁,buff锁住，不能再传数据了
+    
+        // &字符的作用是lambda函数会引用所有外部作用域的变量
         con.wait(lk, [&]
                  {
             return (measurements = getMeasurements()).size() != 0;
-                 });
-        lk.unlock();    // 数据buffer的锁解锁，回调可以继续塞数据了
-        m_estimator.lock(); // 进行后端求解，不能和复位重启冲突
+                 });//!0时 继续进行，并锁起来lk. =0 就wait
+        lk.unlock();    // 数据buffer的锁解锁，回调可以继续塞数据了.所以可能又塞进来的了一堆
+        m_estimator.lock(); // 进行后端求解，不能和复位重启冲突，否则若被清空state，发生错乱
         // 给予范围的for循环，这里就是遍历每组image imu组合
         for (auto &measurement : measurements)
         {
             auto img_msg = measurement.second;
             double dx = 0, dy = 0, dz = 0, rx = 0, ry = 0, rz = 0;
-            // 遍历imu
+            // 遍历imu, 存在疑问：processIMU里面framecount的更新？
             for (auto &imu_msg : measurement.first)
             {
-                double t = imu_msg->header.stamp.toSec();
+                double t = imu_msg->header.stamp.toSec(); //t是IMU 时间戳
                 double img_t = img_msg->header.stamp.toSec() + estimator.td;
+                //在getMeasurements里，IMU取到了图像后面的一帧，先不用这最后一帧
                 if (t <= img_t)
                 { 
-                    if (current_time < 0)
+                    if (current_time < 0) //current_time初值为-1
                         current_time = t;
-                    double dt = t - current_time;
-                    ROS_ASSERT(dt >= 0);
+                    double dt = t - current_time; //dt当前imu与上一imu的时间差
+                    ROS_ASSERT(dt >= 0); //没想明白
                     current_time = t;
                     dx = imu_msg->linear_acceleration.x;
                     dy = imu_msg->linear_acceleration.y;
@@ -281,7 +293,7 @@ void process()
                     //printf("imu: dt:%f a: %f %f %f w: %f %f %f\n",dt, dx, dy, dz, rx, ry, rz);
 
                 }
-                else    // 这就是针对最后一个imu数据，需要做一个简单的线性插值
+                else    // 这就是针对最后一个imu数据，需要做一个简单的线性插值？why?
                 {
                     double dt_1 = img_t - current_time;
                     double dt_2 = t - img_t;
@@ -289,7 +301,7 @@ void process()
                     ROS_ASSERT(dt_1 >= 0);
                     ROS_ASSERT(dt_2 >= 0);
                     ROS_ASSERT(dt_1 + dt_2 > 0);
-                    double w1 = dt_2 / (dt_1 + dt_2);
+                    double w1 = dt_2 / (dt_1 + dt_2); //时间越短则离image越近，越可信，权重越大
                     double w2 = dt_1 / (dt_1 + dt_2);
                     dx = w1 * dx + w2 * imu_msg->linear_acceleration.x;
                     dy = w1 * dy + w2 * imu_msg->linear_acceleration.y;
@@ -297,6 +309,9 @@ void process()
                     rx = w1 * rx + w2 * imu_msg->angular_velocity.x;
                     ry = w1 * ry + w2 * imu_msg->angular_velocity.y;
                     rz = w1 * rz + w2 * imu_msg->angular_velocity.z;
+
+                    // 更新estimator里面纯积分imu的值
+                    // 把imu time, a , vr 都送到相应estimator里面的buff去
                     estimator.processIMU(dt_1, Vector3d(dx, dy, dz), Vector3d(rx, ry, rz));
                     //printf("dimu: dt:%f a: %f %f %f w: %f %f %f\n",dt_1, dx, dy, dz, rx, ry, rz);
                 }
@@ -311,24 +326,27 @@ void process()
             }
             if (relo_msg != NULL)   // 有效回环信息
             {
-                vector<Vector3d> match_points;
+                vector<Vector3d> match_points; //存储所有回环 u, v, id
                 double frame_stamp = relo_msg->header.stamp.toSec();    // 回环的当前帧时间戳
                 for (unsigned int i = 0; i < relo_msg->points.size(); i++)
                 {
                     Vector3d u_v_id;
-                    u_v_id.x() = relo_msg->points[i].x; // 回环帧的归一化坐标和地图点idx
+                    u_v_id.x() = relo_msg->points[i].x; // 回环帧的归一化坐标? 是归一化吗？和地图点idx
                     u_v_id.y() = relo_msg->points[i].y;
                     u_v_id.z() = relo_msg->points[i].z;
                     match_points.push_back(u_v_id);
                 }
                 // 回环帧的位姿
+                // 这里已经有回环帧的位姿? 在滑动窗口里找? 赋予相同位姿?？? 不懂
                 Vector3d relo_t(relo_msg->channels[0].values[0], relo_msg->channels[0].values[1], relo_msg->channels[0].values[2]);
                 Quaterniond relo_q(relo_msg->channels[0].values[3], relo_msg->channels[0].values[4], relo_msg->channels[0].values[5], relo_msg->channels[0].values[6]);
                 Matrix3d relo_r = relo_q.toRotationMatrix();
                 int frame_index;
-                frame_index = relo_msg->channels[0].values[7];
+                frame_index = relo_msg->channels[0].values[7]; //？
                 estimator.setReloFrame(frame_stamp, frame_index, match_points, relo_t, relo_r);
             }
+
+            //视觉信息处理部分
 
             ROS_DEBUG("processing vision data with stamp %f \n", img_msg->header.stamp.toSec());
 
@@ -337,10 +355,15 @@ void process()
             map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> image;
             for (unsigned int i = 0; i < img_msg->points.size(); i++)
             {
-                int v = img_msg->channels[0].values[i] + 0.5;
-                int feature_id = v / NUM_OF_CAM;
-                int camera_id = v % NUM_OF_CAM;
-                double x = img_msg->points[i].x;    // 去畸变后归一滑像素坐标
+                // feature_points->channels.push_back(id_of_point);
+                // feature_points->channels.push_back(u_of_point);
+                // feature_points->channels.push_back(v_of_point);
+                // feature_points->channels.push_back(velocity_x_of_point);
+                // feature_points->channels.push_back(velocity_y_of_point);
+                int v = img_msg->channels[0].values[i] + 0.5; //id of point + 0.5???
+                int feature_id = v / NUM_OF_CAM; //id本身
+                int camera_id = v % NUM_OF_CAM; //都是0
+                double x = img_msg->points[i].x;    // 去畸变后归一化像素坐标
                 double y = img_msg->points[i].y;
                 double z = img_msg->points[i].z;
                 double p_u = img_msg->channels[1].values[i];    // 特征点像素坐标
@@ -350,7 +373,8 @@ void process()
                 ROS_ASSERT(z == 1); // 检查是不是归一化
                 Eigen::Matrix<double, 7, 1> xyz_uv_velocity;
                 xyz_uv_velocity << x, y, z, p_u, p_v, velocity_x, velocity_y;
-                image[feature_id].emplace_back(camera_id,  xyz_uv_velocity);
+                //mono下一个feature_id只对应一个xyz_uv_velocity
+                image[feature_id].emplace_back(camera_id,  xyz_uv_velocity); 
             }
             estimator.processImage(image, img_msg->header);
 
@@ -396,16 +420,17 @@ int main(int argc, char **argv)
     registerPub(n);
     // 接受imu消息
     ros::Subscriber sub_imu = n.subscribe(IMU_TOPIC, 2000, imu_callback, ros::TransportHints().tcpNoDelay());
-    // 接受前端视觉光流结果
+    //通过TransportHints 数据结构指定下层传输协议， 这里使用TCP无延迟协议
+    // 接受前端视觉光流结果，feature的结构{特征像素坐标集合，众多channel}
     ros::Subscriber sub_image = n.subscribe("/feature_tracker/feature", 2000, feature_callback);
     // 接受前端重启命令
-    ros::Subscriber sub_restart = n.subscribe("/feature_tracker/restart", 2000, restart_callback);
+    ros::Subscriber sub_restart = n.subscribe("/feature_tracker/restart", 2000, restart_callback); //所有状态清零
     // 回环检测的fast relocalization响应
     ros::Subscriber sub_relo_points = n.subscribe("/pose_graph/match_points", 2000, relocalization_callback);
 
     // 核心处理线程
     std::thread measurement_process{process};
-    ros::spin();
+    ros::spin(); //触发所有可用回调函数并进入循环
 
     return 0;
 }

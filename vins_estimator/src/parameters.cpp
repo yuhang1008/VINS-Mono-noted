@@ -104,7 +104,7 @@ void readParameters(ros::NodeHandle &n)
         cv::cv2eigen(cv_R, eigen_R);
         cv::cv2eigen(cv_T, eigen_T);
         Eigen::Quaterniond Q(eigen_R);
-        eigen_R = Q.normalized();
+        eigen_R = Q.normalized(); // Q转为单位四元数，隐式转换？？？
         RIC.push_back(eigen_R);
         TIC.push_back(eigen_T);
         ROS_INFO_STREAM("Extrinsic_R : " << std::endl << RIC[0]);
@@ -116,7 +116,7 @@ void readParameters(ros::NodeHandle &n)
     BIAS_ACC_THRESHOLD = 0.1;
     BIAS_GYR_THRESHOLD = 0.1;
 
-    // 传感器时间延时相关
+    // 传感器时间延时相关 TD=time difference
     TD = fsSettings["td"];
     ESTIMATE_TD = fsSettings["estimate_td"];
     if (ESTIMATE_TD)
@@ -124,7 +124,7 @@ void readParameters(ros::NodeHandle &n)
     else
         ROS_INFO_STREAM("Synchronized sensors, fix time offset: " << TD);
 
-    ROLLING_SHUTTER = fsSettings["rolling_shutter"];
+    ROLLING_SHUTTER = fsSettings["rolling_shutter"]; //卷帘快门相机
     if (ROLLING_SHUTTER)
     {
         TR = fsSettings["rolling_shutter_tr"];

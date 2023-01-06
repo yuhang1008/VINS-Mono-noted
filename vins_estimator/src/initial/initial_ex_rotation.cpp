@@ -11,12 +11,12 @@ InitialEXRotation::InitialEXRotation(){
 // 标定imu和相机之间的旋转外参，通过imu和图像计算的旋转使用手眼标定计算获得
 bool InitialEXRotation::CalibrationExRotation(vector<pair<Vector3d, Vector3d>> corres, Quaterniond delta_q_imu, Matrix3d &calib_ric_result)
 {
-    frame_count++;
+    frame_count++; //?
     // 根据特征关联求解两个连续帧相机的旋转R12
     Rc.push_back(solveRelativeR(corres));
     Rimu.push_back(delta_q_imu.toRotationMatrix());
     // 通过外参把imu的旋转转移到相机坐标系
-    Rc_g.push_back(ric.inverse() * delta_q_imu * ric);  // ric是上一次求解得到的外参
+    Rc_g.push_back(ric.inverse() * delta_q_imu * ric);  // ric是上一次求解得到的外参?
 
     Eigen::MatrixXd A(frame_count * 4, 4);
     A.setZero();
@@ -32,10 +32,11 @@ bool InitialEXRotation::CalibrationExRotation(vector<pair<Vector3d, Vector3d>> c
         // 一个简单的核函数
         double huber = angular_distance > 5.0 ? 5.0 / angular_distance : 1.0;
         ++sum_ok;
-        Matrix4d L, R;
+        Matrix4d L, R; //对应VIO第七节 (6)
 
         double w = Quaterniond(Rc[i]).w();
         Vector3d q = Quaterniond(Rc[i]).vec();
+        
         L.block<3, 3>(0, 0) = w * Matrix3d::Identity() + Utility::skewSymmetric(q);
         L.block<3, 1>(0, 3) = q;
         L.block<1, 3>(3, 0) = -q.transpose();
@@ -49,7 +50,7 @@ bool InitialEXRotation::CalibrationExRotation(vector<pair<Vector3d, Vector3d>> c
         R.block<1, 3>(3, 0) = -q.transpose();
         R(3, 3) = w;
 
-        A.block<4, 4>((i - 1) * 4, 0) = huber * (L - R);    // 作用在残差上面
+        A.block<4, 4>((i - 1) * 4, 0) = huber * (L - R);    // //对应VIO第七节 (7)
     }
 
     JacobiSVD<MatrixXd> svd(A, ComputeFullU | ComputeFullV);

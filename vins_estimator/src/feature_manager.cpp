@@ -59,7 +59,7 @@ int FeatureManager::getFeatureCount()
 bool FeatureManager::addFeatureCheckParallax(int frame_count, const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> &image, double td)
 {
     ROS_DEBUG("input feature: %d", (int)image.size());
-    ROS_DEBUG("num of feature: %d", getFeatureCount());
+    ROS_DEBUG("num of feature: %d", getFeatureCount()); //feature 这个list里面的计数
     double parallax_sum = 0;
     int parallax_num = 0;
     last_track_num = 0;
@@ -67,10 +67,12 @@ bool FeatureManager::addFeatureCheckParallax(int frame_count, const map<int, vec
     for (auto &id_pts : image)
     {
         // 用特征点信息构造一个对象
-        FeaturePerFrame f_per_fra(id_pts.second[0].second, td);
-
+        FeaturePerFrame f_per_fra(id_pts.second[0].second, td); //（x y z uv v_x v_y, td)
+                                                                // 归一   像素 归一速度  imu时间差
         int feature_id = id_pts.first;
         // 在已有的id中寻找是否是有相同的特征点
+        // 熟悉find_if+lambda表达式用法，可见practice里面，注意者lambda的的输入量it 与本身下面的it 不同
+        // 第一个it返回的是指向遍历结果的指针
         auto it = find_if(feature.begin(), feature.end(), [feature_id](const FeaturePerId &it)
                           {
             return it.feature_id == feature_id;
@@ -78,8 +80,10 @@ bool FeatureManager::addFeatureCheckParallax(int frame_count, const map<int, vec
         // 这是一个新的特征点
         if (it == feature.end())
         {
-            // 在特征点管理器中，新创建一个特征点id，这里的frame_count就是该特征点在滑窗中的当前位置，作为这个特征点的起始位置
+            // 在特征点管理器中，新创建一个特征点id，这里的frame_count就是该特征点在滑窗中的当前位置，作为这个特征点的起始位置!存到frame_count里面
+            // featurePerId 要存储第一次id出现时的frame count！
             feature.push_back(FeaturePerId(feature_id, frame_count));
+            //即上面push_back的新feature
             feature.back().feature_per_frame.push_back(f_per_fra);
         }
         // 如果这是一个已有的特征点，就在对应的“组织”下增加一个帧属性
@@ -89,19 +93,22 @@ bool FeatureManager::addFeatureCheckParallax(int frame_count, const map<int, vec
             last_track_num++;   // 追踪到上一帧的特征点数目
         }
     }
-    // 前两帧都设置为KF，追踪过少也认为是KF
+
+    // 前两帧都设置为KF，追踪过少也认为是KF,why?
     if (frame_count < 2 || last_track_num < 20)
         return true;
 
     for (auto &it_per_id : feature)
     {
         // 计算的实际上是frame_count-1,也就是前一帧是否为关键帧
-        // 因此起始帧至少得是frame_count - 2,同时至少覆盖到frame_count - 1帧
+        // 因此起始帧至少得是frame_count - 2,同时至少覆盖到frame_count - 1帧 ?????????
+        // it_per_id.feature_per_frame.size()代表该特征点被追踪到的次数
         if (it_per_id.start_frame <= frame_count - 2 &&
+        // 注意：中间不可能跟踪丢失! 所以size直接就是连续跨过的帧的数量
             it_per_id.start_frame + int(it_per_id.feature_per_frame.size()) - 1 >= frame_count - 1)
         {
-            parallax_sum += compensatedParallax2(it_per_id, frame_count);
-            parallax_num++;
+            parallax_sum += compensatedParallax2(it_per_id, frame_count); //当前id视察
+            parallax_num++; //总计算视察数
         }
     }
     // 这个和上一帧没有相同的特征点
@@ -428,7 +435,7 @@ double FeatureManager::compensatedParallax2(const FeaturePerId &it_per_id, int f
 {
     //check the second last frame is keyframe or not
     //parallax betwwen seconde last frame and third last frame
-    // 找到相邻两帧
+    // 找到相邻两帧 ？？？
     const FeaturePerFrame &frame_i = it_per_id.feature_per_frame[frame_count - 2 - it_per_id.start_frame];
     const FeaturePerFrame &frame_j = it_per_id.feature_per_frame[frame_count - 1 - it_per_id.start_frame];
 
@@ -444,12 +451,13 @@ double FeatureManager::compensatedParallax2(const FeaturePerId &it_per_id, int f
     //int r_i = frame_count - 2;
     //int r_j = frame_count - 1;
     //p_i_comp = ric[camera_id_j].transpose() * Rs[r_j].transpose() * Rs[r_i] * ric[camera_id_i] * p_i;
+
     p_i_comp = p_i;
     double dep_i = p_i(2);
     double u_i = p_i(0) / dep_i;
     double v_i = p_i(1) / dep_i;
     double du = u_i - u_j, dv = v_i - v_j;  // 归一化相机坐标系的坐标差
-    // 当都是归一化坐标系时，他们两个都是一样的
+    // 当都是归一化坐标系时，他们两个都是一样的 du=du_comp, dv=dv_comp
     double dep_i_comp = p_i_comp(2);
     double u_i_comp = p_i_comp(0) / dep_i_comp;
     double v_i_comp = p_i_comp(1) / dep_i_comp;

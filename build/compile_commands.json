@@ -1,0 +1,112 @@
+[
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/estimator_node.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/estimator_node.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/estimator_node.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/parameters.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/parameters.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/parameters.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/estimator.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/estimator.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/estimator.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/feature_manager.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/feature_manager.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/feature_manager.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/factor/pose_local_parameterization.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/pose_local_parameterization.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/pose_local_parameterization.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/factor/projection_factor.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/projection_factor.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/projection_factor.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/factor/projection_td_factor.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/projection_td_factor.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/projection_td_factor.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/factor/marginalization_factor.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/marginalization_factor.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/factor/marginalization_factor.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/utility/utility.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/utility/utility.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/utility/utility.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/utility/visualization.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/utility/visualization.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/utility/visualization.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/utility/CameraPoseVisualization.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/utility/CameraPoseVisualization.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/utility/CameraPoseVisualization.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/initial/solve_5pts.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/solve_5pts.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/solve_5pts.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/initial/initial_aligment.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/initial_aligment.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/initial_aligment.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/initial/initial_sfm.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/initial_sfm.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/initial_sfm.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build",
+  "command": "/usr/bin/g++ -DGFLAGS_IS_A_DLL=0 -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"vins_estimator\\\" -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/opencv -isystem /usr/local/include/eigen3 -isystem /usr/local/include/opencv -std=c++11 -O3 -Wall -g -o CMakeFiles/vins_estimator.dir/src/initial/initial_ex_rotation.cpp.o -c /home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/initial_ex_rotation.cpp",
+  "file": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/vins_estimator/src/initial/initial_ex_rotation.cpp"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgmock_EXPORTS -I/usr/src/googletest/googlemock/include -I/usr/src/googletest/googlemock -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock.dir/usr/src/googletest/googletest/src/gtest-all.cc.o -c /usr/src/googletest/googletest/src/gtest-all.cc",
+  "file": "/usr/src/googletest/googletest/src/gtest-all.cc"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgmock_EXPORTS -I/usr/src/googletest/googlemock/include -I/usr/src/googletest/googlemock -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /usr/src/googletest/googlemock/src/gmock-all.cc",
+  "file": "/usr/src/googletest/googlemock/src/gmock-all.cc"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgmock_main_EXPORTS -I/usr/src/googletest/googlemock/include -I/usr/src/googletest/googlemock -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock_main.dir/usr/src/googletest/googletest/src/gtest-all.cc.o -c /usr/src/googletest/googletest/src/gtest-all.cc",
+  "file": "/usr/src/googletest/googletest/src/gtest-all.cc"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgmock_main_EXPORTS -I/usr/src/googletest/googlemock/include -I/usr/src/googletest/googlemock -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock_main.dir/src/gmock-all.cc.o -c /usr/src/googletest/googlemock/src/gmock-all.cc",
+  "file": "/usr/src/googletest/googlemock/src/gmock-all.cc"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgmock_main_EXPORTS -I/usr/src/googletest/googlemock/include -I/usr/src/googletest/googlemock -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /usr/src/googletest/googlemock/src/gmock_main.cc",
+  "file": "/usr/src/googletest/googlemock/src/gmock_main.cc"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock/gtest",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgtest_EXPORTS -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /usr/src/googletest/googletest/src/gtest-all.cc",
+  "file": "/usr/src/googletest/googletest/src/gtest-all.cc"
+},
+{
+  "directory": "/home/yuhang/catkin_ws/src/VINS-Mono-noted/build/gtest/googlemock/gtest",
+  "command": "/usr/bin/g++ -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgtest_main_EXPORTS -I/usr/src/googletest/googletest/include -I/usr/src/googletest/googletest -std=c++11 -O3 -Wall -g -fPIC -std=c++11 -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /usr/src/googletest/googletest/src/gtest_main.cc",
+  "file": "/usr/src/googletest/googletest/src/gtest_main.cc"
+}
+]

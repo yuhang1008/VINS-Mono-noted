@@ -131,12 +131,12 @@ void FeatureTracker::readImage(const cv::Mat &_img, double _cur_time)
         // 调用opencv函数进行光流追踪
         // Step 1 通过opencv光流追踪给的状态位剔除outlier
         cv::calcOpticalFlowPyrLK(cur_img, forw_img, cur_pts, forw_pts, status, err, cv::Size(21, 21), 3);
-
+        // 输出 forw_pts 是像素坐标
         for (int i = 0; i < int(forw_pts.size()); i++)
             // Step 2 通过图像边界剔除outlier
             if (status[i] && !inBorder(forw_pts[i]))    // 追踪状态好检查在不在图像范围
                 status[i] = 0;
-        reduceVector(prev_pts, status); // 没用到
+        reduceVector(prev_pts, status); 
         reduceVector(cur_pts, status);
         reduceVector(forw_pts, status);
         reduceVector(ids, status);  // 特征点的id
@@ -150,11 +150,11 @@ void FeatureTracker::readImage(const cv::Mat &_img, double _cur_time)
 
     if (PUB_THIS_FRAME)
     {
-        // Step 3 通过对级约束来剔除outlier
+        // Step 3 先去除畸变，再通过对级约束来剔除outlier
         rejectWithF();
         ROS_DEBUG("set mask begins");
         TicToc t_m;
-        setMask();
+        setMask(); //同时根据特征点的数量从大到小对所有数据进行了排序
         ROS_DEBUG("set mask costs %fms", t_m.toc());
 
         ROS_DEBUG("detect feature begins");
@@ -178,7 +178,7 @@ void FeatureTracker::readImage(const cv::Mat &_img, double _cur_time)
 
         ROS_DEBUG("add feature begins");
         TicToc t_a;
-        addPoints();
+        addPoints(); //新points id 是 -1
         ROS_DEBUG("selectFeature costs: %fms", t_a.toc());
     }
     prev_img = cur_img;
@@ -212,12 +212,12 @@ void FeatureTracker::rejectWithF()
             // 投影到虚拟相机的像素坐标系
             tmp_p.x() = FOCAL_LENGTH * tmp_p.x() / tmp_p.z() + COL / 2.0;
             tmp_p.y() = FOCAL_LENGTH * tmp_p.y() / tmp_p.z() + ROW / 2.0;
-            un_cur_pts[i] = cv::Point2f(tmp_p.x(), tmp_p.y());
+            un_cur_pts[i] = cv::Point2f(tmp_p.x(), tmp_p.y()); //归一化坐标
 
             m_camera->liftProjective(Eigen::Vector2d(forw_pts[i].x, forw_pts[i].y), tmp_p);
             tmp_p.x() = FOCAL_LENGTH * tmp_p.x() / tmp_p.z() + COL / 2.0;
             tmp_p.y() = FOCAL_LENGTH * tmp_p.y() / tmp_p.z() + ROW / 2.0;
-            un_forw_pts[i] = cv::Point2f(tmp_p.x(), tmp_p.y());
+            un_forw_pts[i] = cv::Point2f(tmp_p.x(), tmp_p.y()); //归一化坐标
         }
 
         vector<uchar> status;
@@ -318,7 +318,7 @@ void FeatureTracker::undistortedPoints()
     // caculate points velocity
     if (!prev_un_pts_map.empty())
     {
-        double dt = cur_time - prev_time;
+        double dt = cur_time - prev_time; //这两都是在 read image 里面定义
         pts_velocity.clear();
         for (unsigned int i = 0; i < cur_un_pts.size(); i++)
         {
