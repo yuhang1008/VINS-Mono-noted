@@ -18,7 +18,7 @@ queue<sensor_msgs::ImageConstPtr> img_buf;
 ros::Publisher pub_img,pub_match;
 ros::Publisher pub_restart;
 
-FeatureTracker trackerData[NUM_OF_CAM];
+FeatureTracker trackerData[NUM_OF_CAM]; //num of cam = 1
 double first_image_time;
 int pub_count = 1;
 bool first_image_flag = true;
@@ -97,7 +97,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
             trackerData[i].readImage(ptr->image.rowRange(ROW * i, ROW * (i + 1)), img_msg->header.stamp.toSec());
         else
         {
-            if (EQUALIZE)
+            if (EQUALIZE) //按照灰度值均一化
             {
                 cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
                 clahe->apply(ptr->image.rowRange(ROW * i, ROW * (i + 1)), trackerData[i].cur_img);
@@ -111,15 +111,17 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
 #endif
     }
 
+    //写法很奇怪
     for (unsigned int i = 0;; i++)
     {
         bool completed = false;
         for (int j = 0; j < NUM_OF_CAM; j++)
             if (j != 1 || !STEREO_TRACK)
-                completed |= trackerData[j].updateID(i);    // 单目的情况下可以直接用=号
+                completed |= trackerData[j].updateID(i);    // 单目的情况下可以直接用=号 双目的代码没写
         if (!completed)
             break;
     }
+
     // 给后端喂数据
    if (PUB_THIS_FRAME)
    {
@@ -179,16 +181,16 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
         // 可视化相关操作
         if (SHOW_TRACK)
         {
-            ptr = cv_bridge::cvtColor(ptr, sensor_msgs::image_encodings::BGR8);
+            ptr = cv_bridge::cvtColor(ptr, sensor_msgs::image_encodings::BGR8); //设置为有颜色
             //cv::Mat stereo_img(ROW * NUM_OF_CAM, COL, CV_8UC3);
-            cv::Mat stereo_img = ptr->image;
+            cv::Mat stereo_img = ptr->image; //左右目在一起的图像
 
             for (int i = 0; i < NUM_OF_CAM; i++)
             {
-                cv::Mat tmp_img = stereo_img.rowRange(i * ROW, (i + 1) * ROW);
-                cv::cvtColor(show_img, tmp_img, CV_GRAY2RGB);
+                cv::Mat tmp_img = stereo_img.rowRange(i * ROW, (i + 1) * ROW); //拿出来一个
+                cv::cvtColor(show_img, tmp_img, CV_GRAY2RGB); // 拿出来的变成彩色
 
-                for (unsigned int j = 0; j < trackerData[i].cur_pts.size(); j++)
+                for (unsigned int j = 0; j < trackerData[i].cur_pts.size(); j++) //在拿出来的图像上画点
                 {
                     double len = std::min(1.0, 1.0 * trackerData[i].track_cnt[j] / WINDOW_SIZE);
                     cv::circle(tmp_img, trackerData[i].cur_pts[j], 2, cv::Scalar(255 * (1 - len), 0, 255 * len), 2);
